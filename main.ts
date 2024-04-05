@@ -68,7 +68,7 @@ while (condition) {
     }
 
     if (ans.select === "View Todo-List"){
-        console.log("***** -MALIK-HUNAIN-TODO-LIST *****");
+        console.log("***** MALIK-HUNAIN-TODO-LIST *****");
         todos.forEach(todo => console.log(todo)
         );
     }
