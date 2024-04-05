@@ -3,8 +3,8 @@
 import inquirer from "inquirer";
 import chalk from "chalk";
 
-let todoList: string[] = [];
-let conditions = true;
+let todos: string[] = [];
+let condition = true;
 
 
 // Print welcome message
@@ -12,73 +12,84 @@ console.log(chalk.bold.rgb(204, 204, 204)(`\n  \t\t <<<=========================
 console.log(chalk.bold.rgb(204, 204, 204)(`<<<=========>>>  ${chalk.bold.hex('#9999FF')('Welcome To \'Code With Malik Hunain\' - Todo-List App ')}  <<<===========>>>`));
 console.log(chalk.bold.rgb(204, 204, 204)(`\t\t <<<======================================>>>\n`));
 
-console.log("\nYour updated Todo-List:" , todoList);
+while (condition) {
+    let ans = await inquirer.prompt(
+        [
+            {
+                name: "select",
+                type: "list",
+                message: "Select an operation",
+                choices: ["Add", "Update", "View Todo-List", "Delete Task", "Exit"],
+            }
+        ]
+    );
 
-let main = async () => {
-    while(conditions){
-        let option = await inquirer.prompt(
-            [
-                {
-                    name: "choice",
-                    type: "list",
-                    message: "Select an option you want to do?",
-                    choices: ["Add Task", "Delete Task", "Upgrade Task", "View Todo-List", "Exit"],
+    if (ans.select === "Add"){
+        let addtodo = await inquirer.prompt(
+            {
+                name: "todo",
+                type: "input",
+                message: "Enter your new task?",
+                validate: function (input) {
+                    if(input.trim() == "") {
+                        return "Please enter a non-empty item."
+                    }
+                    return true;
                 }
-            ]
+            }
         );
-        if(option.choice === "Add Task"){
-            await addTask()
-        }
-        else if(option.choice === "Delete Task"){
-            await deleteTask()
-        }
-        else if(option.choice === "View Todo-List"){
-            await viewTask()
-        }
-        else if(option.choice === "Exit"){
-            conditions = false; 
-        }           
+        if (addtodo.todo.trim() !== ""){
+        todos.push(addtodo.todo);
+        todos.forEach(todo => console.log(todo)
+        );
     }
 }
 
-// Function to add new task to the list:
-let addTask = async () => {
-    let newTask = await inquirer.prompt(
-        [
+    if (ans.select === "Update"){
+        let updateTodo = await inquirer.prompt(
             {
-                name: "task",
+                name: "todo",
+                type: "list",
+                message: "Update items in the Task?",
+                choices: todos.map(item => item)
+            }
+        );
+        let addtodo = await inquirer.prompt(
+            {
+                name: "todo",
                 type: "input",
-                message: "Enter your new task?",
+                message: "Add items in the Task?"
             }
-        ]
-    );
-    todoList.push(newTask.task);
-    console.log(`\n ${newTask.task} task added successfully in Todo-List`);
-}
+        );
+        let newTodo = todos.filter(val => val !== updateTodo.todo);
+        todos = [...newTodo,addtodo.todo];
+        todos.forEach(todo => console.log(todo)
+        );
+    }
 
-// Function to view all Todo-List Tasks:
-let viewTask = () => {
-    console.log("\n Your Todo-list: \n");
-    todoList.forEach((task, index) => {
-        console.log(`${index}: ${task}`)
-    });
-}
+    if (ans.select === "View Todo-List"){
+        console.log("***** -MALIK-HUNAIN-TODO-LIST *****");
+        todos.forEach(todo => console.log(todo)
+        );
+    }
 
-// Function to delete a task from the list:
-let deleteTask = async () => {
-    await viewTask()
-    let taskIndex = await inquirer.prompt(
-        [
+    if (ans.select === "Delete Task"){
+        let deleteTodo = await inquirer.prompt(
             {
-                name: "index",
-                type: "number",
-                message: "Enter the 'index no.' of the task you want to delete?",
+                name: "todo",
+                type: "list",
+                message: "Select item to Delete Task?",
+                choices: todos.map(item => item)
             }
-        ]
-    );
-    let deletedTask = todoList.splice(taskIndex.index, 1);
-    console.log(`\n ${deletedTask} this task has been deleted successfully from your Todo-List`)
+        )
+        let newTodo = todos.filter(val => val !== deleteTodo.todo);
+        todos = [...newTodo];
+        todos.forEach(todo => console.log(todo)
+        );
+    }
 
+    if (ans.select === "Exit"){
+        console.log("Exiting Program...");
+        condition = false;
+    }
 }
-
-main()
